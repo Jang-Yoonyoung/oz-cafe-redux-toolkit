@@ -1,6 +1,11 @@
+import { useDispatch, useSelector } from "react-redux";
 import data from "../assets/data";
+import { removeFromCart } from "../../redux/redux";
 
-function Cart({ menu, cart, setCart }) {
+function Cart() {
+  const menu = useSelector(state => state.menuReducer)
+  const cart = useSelector(state => state.cartReducer)
+
   if (!menu)
     return (
       <div style={{ textAlign: "center", margin: "80px" }}>
@@ -20,8 +25,6 @@ function Cart({ menu, cart, setCart }) {
               item={allMenus.find((menu) => menu.id === el.id)}
               options={el.options}
               quantity={el.quantity}
-              cart={cart}
-              setCart={setCart}
             />
           ))
         ) : (
@@ -32,7 +35,9 @@ function Cart({ menu, cart, setCart }) {
   );
 }
 
-function CartItem({ item, options, quantity, cart, setCart }) {
+function CartItem({ item, options, quantity }) {
+  const dispatch = useDispatch()
+
   return (
     <li className="cart-item">
       <div className="cart-item-info">
@@ -40,17 +45,15 @@ function CartItem({ item, options, quantity, cart, setCart }) {
         <div>{item.name}</div>
       </div>
       <div className="cart-item-option">
-        {Object.keys(options).map((el) => (
-          <div key={el.id}>
-            {el} : {data.options[el][options[el]]}
-          </div>
-        ))}
+        {Object.keys(options).map(el => 
+          <div>{el} : {data.options[el][options[el]]}</div>
+        )}
         <div>개수 : {quantity}</div>
       </div>
       <button
         className="cart-item-delete"
         onClick={() => {
-          setCart(cart.filter((el) => item.id !== el.id));
+          dispatch(removeFromCart(item.id))
         }}
       >
         삭제
